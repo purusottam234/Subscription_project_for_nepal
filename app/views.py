@@ -10,16 +10,16 @@ from .serializers import RegisterSerializer
 from django.contrib.auth.hashers import make_password
 from django.contrib import auth
 import datetime
-from datetime import timedelta
-from datetime import datetime as dt
 import requests
-import json
-from django.http import HttpResponseRedirect
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from.models import User
+ 
 
 
 today = datetime.date.today()
 
-
+ 
 def home(request):
 	return render(request, 'index.html')
 
@@ -34,7 +34,10 @@ def index(request):
 	
 
 def signin(request):
-	return render(request, 'login.html')
+	if request.user.is_authenticated:
+		return redirect('/home')
+	else:
+		return render(request, 'login.html')
 
 def check_mail_ajax(request):
 	if request.is_ajax():
@@ -149,44 +152,64 @@ class EsewaVerifyView(View):
             return redirect("/esewa-request/?o_id="+order_id)
                 
 
-# def call_back_url(request):
-# 	reference = request.GET.get('reference')
-# 	# We need to fetch the reference from PAYMENT
-# 	check_pay = PayHistory.objects.filter(paystack_charge_id=reference).exists()
-# 	if check_pay == False:
-# 		# This means payment was not made error should be thrown here...
-# 		print("Error")
-# 	else:
-# 		payment = PayHistory.objects.get(paid=reference)
-# 		# We need to fetch this to verify if the payment was successful.
-# 	def verify_payment(request):
-# 		url = 'https://khalti.com/api/v2/payment/verify/'+ reference
-# 		headers = {
-# 				'Authorization': 'Key <your secret_key>',
-# 				'Content-Type' : 'application/json',
-# 				'Accept': 'application/json',
-# 				}
-# 		payload = {
-# 				"reference": payment.paid
-# 				}
-# 		x = requests.get(url, data=json.dumps(payload), headers=headers)
-# 		if x.status_code != 200:
-# 			return str(x.status_code)
-			
-# 		results = x.json()
-# 		return results
-
-# 	initialized = verify_payment(request)
-# 	if initialized['data']['status'] == 'success':
-# 		PayHistory.objects.filter(paystack_charge_id=initialized['data']['reference']).update(paid=True)
-# 		new_payment = PayHistory.objects.get(paystack_charge_id=initialized['data']['reference'])
-# 		instance = Membership.objects.get(id=new_payment.payment_for.id)
-# 		sub = UserMembership.objects.filter(reference_code=initialized['data']['reference']).update(membership=instance)
-# 		user_membership = UserMembership.objects.get(reference_code=initialized['data']['reference'])
-# 		Subscription.objects.create(user_membership=user_membership, expires_in=dt.now().date() + timedelta(days=user_membership.membership.duration))
-# 		return redirect('subscribed')
-# 	return render(request, 'payment.html')
-
-
 def subscribed(request):
 	return render(request, 'subscribed.html')
+
+
+def  khaltirequest(request):   
+	plan = request.GET.get('sub_plan')
+	fetch_membership = Membership.objects.filter(membership_type=plan).exists()
+	if fetch_membership == False:
+		return redirect('subscribe')
+	membership = Membership.objects.get(membership_type=plan)
+	price = float(membership.price)  
+	amount = int(price)
+	instance = PayHistory.objects.create(amount= amount, payment_for=membership, user=request.user)
+	context = {
+		'instance': instance,
+	}
+	UserMembership.objects.filter(user=instance.user).update(membership=membership)
+	return render(request,"khaltirequest.html", context)
+
+
+class KhaltiVerifyView(View):
+    def get(self, request, *args, **kwargs):
+        token = request.GET.get("token")                    
+        amount = request.GET.get("amount")                  
+        o_id = request.GET.get("order_id")
+		               
+
+        url = "https://khalti.com/api/v2/payment/verify/"   
+
+        payload = {                                 
+            "token": token,
+            "amount": amount
+        }
+
+        headers = {                                
+            "Authorization": "Key test_secret_key_98500166be6743ddaa4414e64963359a"
+        }
+		
+        order_obj = PayHistory.objects.get(id=o_id)
+        print(order_obj)
+        response = requests.post(url, payload, headers=headers) 
+        print(response)   
+		     
+        resp_dict = response.json()               
+        if resp_dict.get("idx"):                 
+            success = True                        
+            order_obj.paid = True    
+            order_obj.save()                      
+
+        else:                                     
+            success = False                         
+
+        data = {
+            "success": success
+        }
+
+        return JsonResponse(data)   
+
+def logout(request):
+	auth.logout(request)
+	return redirect('/')

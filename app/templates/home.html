@@ -8,10 +8,13 @@
 </head>
 <body>
     <div class="container">
-        <p>Hi Am here... I have a subscription plan.</p>
+    <a href="{% url 'logout'%}">logout</a>
+        <p>Hi Am {{sub.user_membership}} I have a subscription plan.</p>
         <p class="alert btn-success">
             {{ sub.user_membership.membership }} Plan
         </p>
     </div>
+ 
+ 
 </body>
 </html>

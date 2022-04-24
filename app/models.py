@@ -5,11 +5,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.conf import settings
-
 import datetime
 from datetime import timedelta
 from datetime import datetime as dt
-
 today = datetime.date.today()
 
 ### Custom User Model Used Here
@@ -81,6 +79,7 @@ class UserSetting(models.Model):
     recieve_email_notice = models.BooleanField(default=True)
 
 #### User Payment History
+ 
 class PayHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     # paystack_charge_id = models.CharField(max_length=100, default='', blank=True)

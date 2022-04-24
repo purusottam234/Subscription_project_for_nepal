@@ -18,10 +18,14 @@
 		<title>Subscription Based</title>
 	</head>
 	<body>
+	{% if user.is_authenticate %}
+	redirect ("")
+
+	{% else %}
 		<div class="container">
 			<div class="row main">
 				<div class="main-login main-center">
-				<h5>Sign up once and watch any of our videos.</h5>
+				<h5>Sign in once and get free subscription</h5>
 					<form class="" id="signup">
 						<div id="output" class="text-center text-primary font-weight-medium alert"></div>
 
@@ -51,9 +55,11 @@
 						</div>
 						
 					</form>
+					wants to register? Click here to <a href="/register">Register</a>
 				</div>
 			</div>
 		</div>
+		{% endif %}
 
 		 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
