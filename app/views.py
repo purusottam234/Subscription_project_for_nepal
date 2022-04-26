@@ -34,8 +34,9 @@ def index(request):
 	
 
 def signin(request):
+	
 	if request.user.is_authenticated:
-		return redirect('/home')
+		return redirect('home/')
 	else:
 		return render(request, 'login.html')
 
