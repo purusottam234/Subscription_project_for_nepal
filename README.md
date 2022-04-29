@@ -116,9 +116,8 @@ You can setting up your project by  copy up and running follow these simple exam
 
 ### Features
 * Inbuilt product model for adding product
-* Esewa is already implemented for Payment Purpose
-* Inbuilt subscription model for adding and manage subscription like trial, weekly, monthly, yearly, non recurance etc
-* social auth like github, facebook, twitter and google  are already implemented 
+* Esewa and Khalti are already implemented for Payment Purpose
+* Inbuilt subscription model for adding and manage subscription like  weekly, monthly, yearly etc
 
 
 
@@ -150,31 +149,16 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-### To use esewa for django
+### To use esewa and khalti for django
 * Add app name in the settings.py file's INSTALLED_APPS
   ```sh
-  'apps',
+  'app',
+  'shop',
   ```
-* Include esewa in the root urls of your Project
+* Include these paths in the root urls of your Project
   ```sh
-   path("",include("apps.urls")),
-   ```
-### To use Social Authentication
-* Add these stuff in the settings.py file's INSTALLED_APPS
-  ```sh
-  'social_django',
-  'django.contrib.sites',
-  ```
-* Add these stuff in the settings.py file
-  ```sh
-  SITE_ID = 1
-  ```
-* To use Social Authentication include following urls in your root urls of your project
-  ```sh
-   from django.contrib.auth import views as auth_views
-   path('login/', auth_views.LoginView.as_view(), name='login'),
-   path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-   path('oauth/', include('social_django.urls', namespace='social')),
+   path("",include("app.urls")),
+   path("shop",include("shop.urls")),
    ```
 
 ### Configuration
@@ -187,34 +171,12 @@ This is an example of how to list things you need to use the software and how to
   LOGOUT_REDIRECT_URL = 'login'
 
   ```
-* List all the configuration which are used while creating objects in social auth like facebook, google, twitter and github in allowed host of your settings.py file
-  ``` sh
-  ALLOWED_HOSTS = ['mysite.com','localhost','127.0.0.1']
-
-  ```
-* List all these configuration in the settings.py for social auth
-
-  ``` sh
-  SOCIAL_AUTH_GITHUB_KEY = 'your key'
-  SOCIAL_AUTH_GITHUB_SECRET = 'your secret key'
- 
-  SOCIAL_AUTH_TWITTER_KEY = 'your key'
-  SOCIAL_AUTH_TWITTER_SECRET = 'your secret key'
- 
-  SOCIAL_AUTH_FACEBOOK_KEY = 'your key' # Facebook App ID
-  SOCIAL_AUTH_FACEBOOK_SECRET = 'your secret key'  # Facebook App Secret
-  SOCIAL_AUTH_FACEBOOK_SCOPE = ['']
-
-
-  SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'your key'
-  SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'your secret key'  # Google Consumer Secret
-  ```
-
-* Note: In this package we provide the test merchant key for esewa, to use for the production please update the merchant key in your esewa model of the admin panel. 
 
 * After listing all the configuration command following commands 
   ```sh
-  python manage.py makemigrations esewa
+  python manage.py makemigrations app
+  python manage.py migrate
+  python manage.py makemigrations shop
   python manage.py migrate
   ```
 
@@ -234,9 +196,8 @@ This is an example of how to list things you need to use the software and how to
 ## Features
 
 * Inbuilt product model for adding product
-* Esewa is already implemented for Payment Purpose
-* Inbuilt subscription model for adding and manage subscription like trial, weekly, monthly, yearly, non recurance etc
-* social auth like github, facebook, twitter and google  are already implemented 
+* Esewa and Khalti are already implemented for Payment Purpose
+* Inbuilt subscription model for adding and manage subscription like  weekly, monthly, yearly etc
 
 
 
